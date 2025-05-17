@@ -20,4 +20,15 @@ router.post('/', async (req, res) => {
   }
 });
 
+//GET /api/sessions
+router.get('/', async (req, res) => {
+  try {
+    const sessions = await Session.find().sort({ completedAt: -1 });
+    res.json(sessions);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch sessions' });
+  }
+});
+
 module.exports = router;
