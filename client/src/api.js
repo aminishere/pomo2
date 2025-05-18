@@ -1,30 +1,17 @@
 // src/api.js
-const API_URL = 'http://localhost:5000';
+import axios from "axios";
 
-export const registerUser = async (userData) => {
-  const res = await fetch(`${API_URL}/api/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-  });
-  return res.json();
-};
+const API = axios.create({
+  baseURL: "http://localhost:5000/api", // change if needed
+});
 
-export const loginUser = async (userData) => {
-  const res = await fetch(`${API_URL}/api/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-  });
-  return res.json();
-};
+// Add token from localStorage to headers
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
-export const fetchWithToken = async (endpoint) => {
-  const token = localStorage.getItem('token');
-  const res = await fetch(`${API_URL}${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.json();
-};
+export default API;

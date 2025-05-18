@@ -1,42 +1,44 @@
-// src/pages/Register.jsx
-import { useState } from 'react';
-import { registerUser } from '../api';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import API from "../api";
+import { useNavigate } from "react-router-dom";
 
-export default function Register() {
-  const [form, setForm] = useState({ username: '', password: '' });
+const Register = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await registerUser(form);
-    if (res.token) {
-      localStorage.setItem('token', res.token);
-      navigate('/');
-    } else {
-      alert(res.error || "Registration failed");
+    try {
+      await API.post("/auth/register", { username, password });
+      alert("Registered successfully! Now login.");
+      navigate("/login");
+    } catch (err) {
+      alert("Registration failed");
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Register</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          className="input input-bordered w-full"
-          placeholder="Username"
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-        />
-        <input
-          type="password"
-          className="input input-bordered w-full"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <button className="btn btn-primary w-full" type="submit">Register</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto">
+      <h1 className="text-xl mb-4">Register</h1>
+      <input
+        className="input input-bordered w-full mb-2"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        className="input input-bordered w-full mb-2"
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button className="btn btn-primary w-full" type="submit">
+        Register
+      </button>
+    </form>
   );
-}
+};
+
+export default Register;

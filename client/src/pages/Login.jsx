@@ -1,42 +1,46 @@
-// src/pages/Login.jsx
-import { useState } from 'react';
-import { loginUser } from '../api';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import API from "../api";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const [form, setForm] = useState({ username: '', password: '' });
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await loginUser(form);
-    if (res.token) {
-      localStorage.setItem('token', res.token);
-      navigate('/history');
-    } else {
-      alert(res.error || "Login failed");
+    try {
+      const res = await API.post("/auth/login", { username, password });
+      login(res.data.token); // Save token
+      navigate("/dashboard");
+    } catch (err) {
+      alert("Login failed");
     }
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          className="input input-bordered w-full"
-          placeholder="Username"
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-        />
-        <input
-          type="password"
-          className="input input-bordered w-full"
-          placeholder="Password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-        />
-        <button className="btn btn-primary w-full" type="submit">Login</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit} className="p-4 max-w-md mx-auto">
+      <h1 className="text-xl mb-4">Login</h1>
+      <input
+        className="input input-bordered w-full mb-2"
+        placeholder="Username"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <input
+        className="input input-bordered w-full mb-2"
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button className="btn btn-primary w-full" type="submit">
+        Login
+      </button>
+    </form>
   );
-}
+};
+
+export default Login;
