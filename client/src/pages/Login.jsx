@@ -13,8 +13,8 @@ const Login = () => {
     e.preventDefault();
     try {
       const res = await API.post("/auth/login", { username, password });
-      login(res.data.token); // Save token
-      navigate("/dashboard");
+      login(res.data.token, res.data.username); // Save token
+      navigate("/");
     } catch (err) {
       alert("Login failed");
     }

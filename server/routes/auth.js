@@ -55,7 +55,7 @@ router.post('/login', [
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
 
-    res.json({ token });
+    res.json({ token, username: user.username });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
